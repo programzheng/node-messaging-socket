@@ -39,9 +39,23 @@ app.use(function(err, req, res, next) {
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
 
-  // render the error page
-  res.status(err.status || 500);
-  res.render('error');
+  switch(err.status){
+    case 401:
+      res.status(401).send('Unauthorized');
+      return
+    case 404:
+      if (req.accepts('json')) {
+        res.status(404).json({ error: 'Not found' });
+        return;
+      }
+      res.status(404).render('404');
+    default:
+      if (req.accepts('json')) {
+        res.status(500).json({ error: err });
+        return;
+      }
+      res.status(500).render(err);
+  }
 });
 
 module.exports = app;
