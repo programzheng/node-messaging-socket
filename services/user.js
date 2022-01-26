@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken');
 /**
  * Models
  */
- const { User } = require(__dirname + '/../models/index.js')
+ const { sequelize, User, UserProfile } = require(__dirname + '/../models/index.js')
 
 class UserService {
     constructor(){
@@ -23,6 +23,12 @@ class UserService {
                 password: await this.gerenateHashPassword(data.password)
             }, { transaction: t })
 
+            await UserProfile.create({
+                userId: user.id,
+                email: data.email,
+                name: data.name,
+            }, { transaction: t })
+
             await t.commit()
 
             return user
@@ -33,6 +39,20 @@ class UserService {
         }
 
         return null
+    }
+
+    async updateUserProfile(data) {
+        const userProfile = await UserProfile.findOne({
+            where: {
+                userId: data.userId
+            }
+        })
+        userProfile.update({
+            email: data.email,
+            name: data.name
+        })
+
+        return userProfile
     }
 
     generateUuid() {
@@ -59,7 +79,7 @@ class UserService {
     }
 
     getUserByUuid(uuid) {
-        return User.findOne({
+        return User.scope(['withoutAccount','withoutPassword']).findOne({
             where: {
                 uuid: uuid
             }
