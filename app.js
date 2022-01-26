@@ -45,20 +45,17 @@ app.use(function(err, req, res, next) {
 
   switch(err.status){
     case 401:
-      res.status(401).send('Unauthorized');
-      return
+      return res.status(401).send('Unauthorized');
     case 404:
       if (req.accepts('json')) {
-        res.status(404).json({ error: 'Not found' });
-        return;
+        return res.status(404).json(err);
       }
-      res.status(404).render('404');
+      return res.status(404).render('404');
     default:
       if (req.accepts('json')) {
-        res.status(500).json({ error: err });
-        return;
+        return res.status(500).json(err);
       }
-      res.status(500).render(err);
+      return res.status(500).render(err);
   }
 });
 
