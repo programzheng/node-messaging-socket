@@ -13,6 +13,28 @@ class UserService {
         this.jwtSecret = process.env.USER_JWT_SECRET
     }
 
+    async create(data) {
+        const t = await sequelize.transaction()
+
+        try {
+            const user = await User.create({
+                uuid: this.generateUuid(),
+                account: data.account,
+                password: await this.gerenateHashPassword(data.password)
+            }, { transaction: t })
+
+            await t.commit()
+
+            return user
+        } catch (error) {
+            await t.rollback()
+
+            console.log(error)
+        }
+
+        return null
+    }
+
     generateUuid() {
         return uuidv4()
     }

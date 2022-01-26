@@ -13,24 +13,21 @@ const { User } = require(__dirname + '/../models/index.js')
 const UserService = require(__dirname + '/../services/user.js')
 const userService = new UserService
 
-router.get('/', function(req, res, next) {
-	Message.findAll().then(data => {
-		res.status(200).send(data);
-	})
-});
-
 router.post('/', async function(req, res, next) {
-	const account = req.body.account
-    const password = req.body.password
 
-    const user = await User.create({
-        uuid: userService.generateUuid(),
-        account: account,
-        password: await userService.gerenateHashPassword(password)
-    })
+    const data = {
+        account: req.body.account,
+        password: req.body.password,
+        email: req.body.email,
+        name: req.body.name
+    }
+
+    const user = await userService.create(data)
     if(!user) return res.status(400).send({ error: 'create error' })
 
-    res.status(200).send(user)
+    res.status(200).send({
+        token: userService.gerenateJwtToken(user)
+    })
 });
 
 router.post('/auth', jwt({ secret: userService.jwtSecret, algorithms: ['HS256'] }), async function(req, res, next) {
