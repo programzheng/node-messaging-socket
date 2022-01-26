@@ -2,6 +2,7 @@ require('dotenv').config();
 
 const createError = require('http-errors');
 const express = require('express');
+const cors = require('cors');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
@@ -10,6 +11,9 @@ const indexRouter = require('./routes/index');
 const apiV1Router = require('./routes/api-v1');
 
 const app = express();
+
+//cors
+app.use(cors());
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
