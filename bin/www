@@ -8,11 +8,18 @@ const app = require('../app');
 const debug = require('debug')('node-messaging-socket:server');
 const http = require('http');
 const { Server } = require("socket.io");
+const jwt = require('express-jwt');
 
 /**
  * Models
  */
 const { Message } = require('../models/index');
+
+/**
+ * Services
+ */
+ const UserService = require(__dirname + '/../services/user.js')
+ const userService = new UserService
 
 /**
  * Get port from environment and store in Express.
@@ -35,14 +42,26 @@ const io = new Server(server, {
     origin: process.env.SOCKETIO_CORS_ORIGIN
   }
 });
+
+//vaild jwt token
+const wrap = middleware => (socket, next) => middleware(socket.request, {}, next);
+io.use(wrap(jwt({ secret: userService.jwtSecret, algorithms: ['HS256'], credentialsRequired: false })));
+io.use((socket, next) => {
+  next();
+});
+
 io.on('connection', async (socket) => {
-  console.log(`a user connected socket id: ${socket.id}`)
+  const user = await userService.getUserByUuid(socket.request.user.uuid)
+  console.log(`a user connected socket id: ${socket.id} user: ${JSON.stringify(user)}`)
 
   //connection emit message
   socket.emit('message', await Message.findAll())
 
   socket.on("add:message", async (data) => {
+    let userId = 0
+    if(user) userId = user.id
     const message = await Message.create({
+      user_id: userId,
       socket_id: socket.id,
       message: data.message
     })
