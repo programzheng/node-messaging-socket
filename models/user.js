@@ -11,22 +11,26 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      this.hasOne(models.UserProfile, {
+        foreignKey: 'userId'
+      });
     }
   }
   User.init({
     uuid: DataTypes.STRING,
     account: DataTypes.STRING,
-    password: DataTypes.STRING
+    password: DataTypes.STRING,
   }, {
     scopes: {
       withoutAccount: {
-        attributes: { exclude: ['account'] },
+        attributes: { exclude:  ['account'] },
       },
       withoutPassword: {
         attributes: { exclude: ['password'] },
       }
     },
     sequelize,
+    paranoid: true,
     modelName: 'User',
   });
   return User;

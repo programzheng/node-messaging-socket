@@ -11,6 +11,23 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      this.belongsTo(models.User, {
+        foreignKey: 'userId'
+      });
+      this.addScope('userProfile', {
+        include: [
+          {
+              model: models.User,
+              attributes: ['uuid'],
+              include: [
+                  {
+                      model: models.UserProfile,
+                      attributes: ['email', 'name']
+                  }
+              ]
+          }
+        ]
+      });
     }
   }
   Message.init({
@@ -19,10 +36,10 @@ module.exports = (sequelize, DataTypes) => {
       autoIncrement: true,
       primaryKey: true
     },
-    socket_id: {
+    socketId: {
       type: DataTypes.STRING,
     },
-    user_id: {
+    userId: {
       type: DataTypes.INTEGER,
       defaultValue: 0
     },

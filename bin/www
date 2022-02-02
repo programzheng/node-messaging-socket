@@ -11,15 +11,12 @@ const { Server } = require("socket.io");
 const jwt = require('express-jwt');
 
 /**
- * Models
- */
-const { Message } = require('../models/index');
-
-/**
  * Services
  */
- const UserService = require(__dirname + '/../services/user.js')
- const userService = new UserService
+const UserService = require(__dirname + '/../services/user.js')
+const userService = new UserService
+const MessageService = require(__dirname + '/../services/message.js');
+const messageService = new MessageService;
 
 /**
  * Get port from environment and store in Express.
@@ -51,21 +48,26 @@ io.use((socket, next) => {
 });
 
 io.on('connection', async (socket) => {
+  socket.join('chat')
+
   const user = await userService.getUserByUuid(socket.request.user.uuid)
   console.log(`a user connected socket id: ${socket.id} user: ${JSON.stringify(user)}`)
 
-  //connection emit message
-  socket.emit('message', await Message.findAll())
+  //emit to 'chat' room
+  io.to('chat').emit('message', await messageService.findAll())
 
   socket.on("add:message", async (data) => {
     let userId = 0
     if(user) userId = user.id
-    const message = await Message.create({
-      user_id: userId,
-      socket_id: socket.id,
+
+    const message = await messageService.create({
+      userId: userId,
+      socketId: socket.id,
       message: data.message
     })
-    socket.emit('message', await Message.findAll())
+    //emit to 'chat' room
+    io.to('chat').emit('message', await messageService.findAll({}))
+
     return message;
   })
 

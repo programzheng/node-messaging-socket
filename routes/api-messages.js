@@ -1,17 +1,14 @@
 const express = require('express');
 const router = express.Router();
-const jwt = require('express-jwt');
 
-/**
- * Models
- */
-const { Message } = require(__dirname + '/../models/index.js')
+const MessageService = require(__dirname + '/../services/message.js');
+const messageService = new MessageService;
 
 /* GET */
 router.get('/', async function(req, res, next) {
-	Message.findAll().then(data => {
-		res.send(data);
-	})
+	const messages = await messageService.findAll();
+
+	return res.status(200).send(messages);
 });
 
 module.exports = router;
