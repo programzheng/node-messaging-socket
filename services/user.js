@@ -1,6 +1,7 @@
 const { v4: uuidv4 } = require('uuid');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const expressJwt = require('express-jwt');
 
 /**
  * Models
@@ -11,6 +12,7 @@ class UserService {
     constructor(){
         this.saltRounds = 10
         this.jwtSecret = process.env.USER_JWT_SECRET
+        this.jwtExpiresIn = '24h'
     }
 
     async create(data) {
@@ -41,6 +43,24 @@ class UserService {
         return null
     }
 
+    async deleteUserById(id) {
+        const user = User.destroy({
+            where: {
+                id: id
+            }
+        });
+
+        const userProfile = UserProfile.destroy({
+            where: {
+                userId: id
+            }
+        });
+
+        const result = (user&&userProfile) ? true : false;
+
+        return result;
+    }
+
     async updateUserProfile(data) {
         const userProfile = await UserProfile.findOne({
             where: {
@@ -60,7 +80,6 @@ class UserService {
     }
 
     gerenateHashPassword(password) {
-        console.log(this.saltRounds)
         return bcrypt.hash(password, this.saltRounds).then((hash) => {
             return hash
         });
@@ -73,7 +92,9 @@ class UserService {
     }
 
     gerenateJwtToken(user) {
-        const token = jwt.sign({ uuid: user.uuid }, this.jwtSecret);
+        const token = jwt.sign({ uuid: user.uuid }, this.jwtSecret, {
+            expiresIn: this.jwtExpiresIn
+        });
 
         return token
     }
@@ -84,6 +105,10 @@ class UserService {
                 uuid: uuid
             }
         })
+    }
+
+    jwtAuthRequiredMiddleware() {
+        return expressJwt({ secret: this.jwtSecret, algorithms: ['HS256'] })
     }
 }
 

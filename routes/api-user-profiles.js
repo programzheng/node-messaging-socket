@@ -13,19 +13,22 @@ const { UserProfile } = require(__dirname + '/../models/index.js')
 const UserService = require(__dirname + '/../services/user.js')
 const userService = new UserService
 
-router.get('/', jwt({ secret: userService.jwtSecret, algorithms: ['HS256'] }), async function(req, res, next) {
+router.get('/', userService.jwtAuthRequiredMiddleware(), async function(req, res, next) {
     const user = await userService.getUserByUuid(req.user.uuid)
-	UserProfile.findOne({
-        where: {
-            userId: user.id
-        }
-    }).then(data => {
-		res.status(200).send(data);
-	})
+    if(!user) return res.status(200).send({
+        'message': '請先登入'
+    });
+    
+	const userProfile = await user.getUserProfile()
+
+    return res.status(200).send(userProfile);
 });
 
-router.put('/', jwt({ secret: userService.jwtSecret, algorithms: ['HS256'] }), async function(req, res, next) {
+router.put('/', userService.jwtAuthRequiredMiddleware() , async function(req, res, next) {
     const user = await userService.getUserByUuid(req.user.uuid)
+    if(!user) return res.status(200).send({
+        'message': '請先登入'
+    });
 
     const data = {
         userId: user.id,
@@ -36,7 +39,7 @@ router.put('/', jwt({ secret: userService.jwtSecret, algorithms: ['HS256'] }), a
     const userProfile = await userService.updateUserProfile(data)
     if(!userProfile) return res.status(400).send({ error: 'update error' })
 
-    res.status(200).send(userProfile)
+    return res.status(200).send(userProfile)
 });
 
 
