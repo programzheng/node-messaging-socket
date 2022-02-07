@@ -12,14 +12,13 @@ class Mailer {
         });
     }
 
-    async sendMail() {
+    async sendMailByHtml(from, to, subject, html) {
         console.log(this.transporter);
         await this.transporter.sendMail({
-            from: '"Fred Foo 👻" <foo@example.com>', // sender address
-            to: "bar@example.com, baz@example.com", // list of receivers
-            subject: "Hello ✔", // Subject line
-            text: "Hello world?", // plain text body
-            html: "<b>Hello world?</b>", // html body
+            from: from, // sender address
+            to: to, // list of receivers
+            subject: subject, // Subject line
+            html: html, // html body
         })
     }
 }
