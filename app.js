@@ -11,7 +11,9 @@ const indexRouter = require('./routes/index');
 const apiV1Router = require('./routes/api-v1');
 
 const app = express();
-
+const corsOptions = {
+  origin: process.env.API_CORS_ORIGIN
+}
 //cors
 app.use(cors());
 
@@ -30,7 +32,7 @@ app.use('/', indexRouter);
 /**
  * api v1 router
  */
-app.use('/api/v1', apiV1Router);
+app.use('/api/v1', cors(corsOptions), apiV1Router);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
