@@ -14,6 +14,10 @@ module.exports = (sequelize, DataTypes) => {
       this.hasOne(models.UserProfile, {
         foreignKey: 'userId'
       });
+
+      this.hasMany(models.UserThirdPartyValidation, {
+        foreignKey: 'userId'
+      });
     }
   }
   User.init({
