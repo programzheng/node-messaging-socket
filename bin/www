@@ -14,9 +14,9 @@ const jwt = require('express-jwt');
  * Services
  */
 const UserService = require(__dirname + '/../services/user.js')
-const userService = new UserService
+const userService = UserService.getInstance();
 const MessageService = require(__dirname + '/../services/message.js');
-const messageService = new MessageService;
+const messageService = MessageService.getInstance();
 
 /**
  * Get port from environment and store in Express.

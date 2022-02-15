@@ -11,7 +11,7 @@ const { UserProfile } = require(__dirname + '/../models/index.js')
  * Services
  */
 const UserService = require(__dirname + '/../services/user.js')
-const userService = new UserService
+const userService = UserService.getInstance();
 
 router.get('/', userService.jwtAuthRequiredMiddleware(), async function(req, res, next) {
     const user = await userService.getUserByUuid(req.user.uuid)

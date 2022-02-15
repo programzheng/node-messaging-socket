@@ -1,9 +1,19 @@
+let instance = null;
+
 /**
  * Models
  */
 const { sequelize, Message, User, UserProfile } = require(__dirname + '/../models/index.js')
 
 class MessageService {
+    static getInstance() {
+        if(!instance) {
+            instance = new this()
+        }
+
+        return instance
+    }
+
     async create(data) {
         const message = await Message.create({
             userId: data.userId,

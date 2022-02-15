@@ -3,16 +3,26 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const expressJwt = require('express-jwt');
 
+let instance = null;
+
 /**
  * Models
  */
- const { sequelize, User, UserProfile } = require(__dirname + '/../models/index.js')
+const { sequelize, User, UserProfile } = require(__dirname + '/../models/index.js')
 
 class UserService {
     constructor(){
         this.saltRounds = 10
         this.jwtSecret = process.env.USER_JWT_SECRET
         this.jwtExpiresIn = '24h'
+    }
+
+    static getInstance() {
+        if(!instance) {
+            instance = new this()
+        }
+
+        return instance
     }
 
     async create(data) {
@@ -99,12 +109,14 @@ class UserService {
         return token
     }
 
-    getUserByUuid(uuid) {
-        return User.scope(['withoutAccount','withoutPassword']).findOne({
+    async getUserByUuid(uuid) {
+        const user = await User.scope(['withoutAccount','withoutPassword']).findOne({
             where: {
                 uuid: uuid
             }
         })
+
+        return user
     }
 
     jwtAuthRequiredMiddleware() {

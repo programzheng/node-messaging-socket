@@ -5,13 +5,13 @@ const jwt = require('express-jwt');
 /**
  * Models
  */
-const { User } = require(__dirname + '/../models/index.js')
+const { User } = require(__dirname + '/../models/index.js');
 
 /**
  * Services
  */
-const UserService = require(__dirname + '/../services/user.js')
-const userService = new UserService
+const UserService = require(__dirname + '/../services/user.js');
+const userService = UserService.getInstance();
 const UserThirdPartyValidationService = require(__dirname + '/../services/user-third-party-validation.js');
 const userThirdPartyValidationService = UserThirdPartyValidationService.getInstance();
 

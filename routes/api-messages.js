@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 const MessageService = require(__dirname + '/../services/message.js');
-const messageService = new MessageService;
+const messageService = MessageService.getInstance();
 
 /* GET */
 router.get('/', async function(req, res, next) {
