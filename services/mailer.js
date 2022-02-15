@@ -1,6 +1,16 @@
 const nodemailer = require("nodemailer");
 
-class Mailer {
+let instance = null;
+
+class MailerService {
+    static getInstance() {
+        if(!instance) {
+            instance = new this()
+        }
+
+        return instance
+    }
+
     get transporter() {
         return nodemailer.createTransport({
             host: process.env.MAILER_HOST,
@@ -13,7 +23,6 @@ class Mailer {
     }
 
     async sendMailByHtml(from, to, subject, html) {
-        console.log(this.transporter);
         await this.transporter.sendMail({
             from: from, // sender address
             to: to, // list of receivers
@@ -23,4 +32,4 @@ class Mailer {
     }
 }
 
-module.exports.Mailer = Mailer;
+module.exports = MailerService;
