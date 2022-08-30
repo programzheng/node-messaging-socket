@@ -48,3 +48,6 @@ down:
 #移除多餘的image
 prune:
 	docker system prune
+
+build-image:
+	docker build -t programzheng/node-messaging-socket -f Dockerfile --platform linux/amd64 .
