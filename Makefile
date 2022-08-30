@@ -49,5 +49,8 @@ down:
 prune:
 	docker system prune
 
+migrate:
+	npx sequelize-cli db:migrate
+
 build-image:
 	docker build -t programzheng/node-messaging-socket -f Dockerfile --platform linux/amd64 .
