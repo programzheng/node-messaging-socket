@@ -54,3 +54,6 @@ migrate:
 
 build-image:
 	docker build -t programzheng/node-messaging-socket -f Dockerfile --platform linux/amd64 .
+
+push-image:
+	docker push programzheng/node-messaging-socket
