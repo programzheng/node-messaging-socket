@@ -64,7 +64,11 @@ class UserThirdPartyValidationService {
     }
 
     async emailRegisterEmail(email, data) {
-        return await mailerService.sendMailByHtml(process.env.MAILER_FROM, email, 'programzheng\'s node messaging socket 會員註冊驗證信件', pug.renderFile('./emails/user-register.pug', data))
+        try {
+            return await mailerService.sendMailByHtml(process.env.MAILER_FROM, email, 'programzheng\'s node messaging socket 會員註冊驗證信件', pug.renderFile('./emails/user-register.pug', data))
+        } catch (error) {
+            console.error(error)
+        }
     }
 
     gerenateJwtToken(user) {

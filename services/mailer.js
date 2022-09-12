@@ -12,18 +12,24 @@ class MailerService {
     }
 
     get transporter() {
-        return nodemailer.createTransport({
+        const options = {
             host: process.env.MAILER_HOST,
             port: process.env.MAILER_PORT,
+            secure: process.env.MAILER_SECURE === 'true' ? true : false,
+            debug: process.env.MAILER_DEBUG === 'true' ? true : false,
             auth: {
                 user: process.env.MAILER_USERNAME,
                 pass: process.env.MAILER_PASSWORD
             }
-        });
+        }
+        if(options.debug) {
+            console.log(options)
+        }
+        return nodemailer.createTransport(options) 
     }
 
     async sendMailByHtml(from, to, subject, html) {
-        await this.transporter.sendMail({
+        return await this.transporter.sendMail({
             from: from, // sender address
             to: to, // list of receivers
             subject: subject, // Subject line
