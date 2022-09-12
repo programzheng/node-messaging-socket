@@ -36,7 +36,7 @@ const server = http.createServer(app);
  */
 const io = new Server(server, {
   cors: {
-    origin: process.env.SOCKETIO_CORS_ORIGIN
+    origin: process.env.SOCKETIO_CORS_ORIGIN.split(',')
   }
 });
 

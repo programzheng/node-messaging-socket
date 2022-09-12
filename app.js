@@ -12,7 +12,7 @@ const apiV1Router = require('./routes/api-v1');
 
 const app = express();
 const corsOptions = {
-  origin: process.env.API_CORS_ORIGIN
+  origin: process.env.API_CORS_ORIGIN.split(',')
 }
 //cors
 app.use(cors());
